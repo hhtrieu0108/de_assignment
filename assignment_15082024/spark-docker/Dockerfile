@@ -11,6 +11,7 @@ RUN apt-get update && \
       openjdk-11-jdk \
       build-essential \
       software-properties-common \
+      dos2unix\
       ssh && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*do
@@ -22,9 +23,9 @@ ENV HADOOP_HOME=${HADOOP_HOME:-"/opt/hadoop"}
 RUN mkdir -p ${HADOOP_HOME} && mkdir -p ${SPARK_HOME}
 WORKDIR ${SPARK_HOME}
 
-RUN curl https://dlcdn.apache.org/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz -o spark-3.5.1-bin-hadoop3.tgz \
- && tar xvzf spark-3.5.1-bin-hadoop3.tgz --directory /opt/spark --strip-components 1 \
- && rm -rf spark-3.5.1-bin-hadoop3.tgz
+RUN curl https://dlcdn.apache.org/spark/spark-3.5.2/spark-3.5.2-bin-hadoop3.tgz -o spark-3.5.2-bin-hadoop3.tgz \
+ && tar -xvzf spark-3.5.2-bin-hadoop3.tgz --directory /opt/spark --strip-components 1 \
+ && rm -rf spark-3.5.2-bin-hadoop3.tgz
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
@@ -44,5 +45,7 @@ RUN chmod u+x /opt/spark/sbin/* && \
 ENV PYTHONPATH=$SPARK_HOME/python/:$PYTHONPATH
 
 COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
+RUN dos2unix entrypoint.sh
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/opt/spark/entrypoint.sh"]

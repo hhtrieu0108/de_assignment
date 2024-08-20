@@ -5,6 +5,8 @@ from scipy.spatial import ConvexHull
 import pandas as pd
 
 # Initialize Spark session
+
+
 spark = SparkSession.builder.appName("ConvexHullPerParticle").getOrCreate()
 
 # Generate sample data with 1,000,000 data points
@@ -12,6 +14,9 @@ num_points = 1000000
 num_particles = 10000  # Assuming we have 10,000 particles
 data = [(random.randint(1, num_particles), random.randint(0, 1000), random.randint(0, 1000)) for _ in range(num_points)]
 
+import time
+
+start = time.time()
 # Create DataFrame
 columns = ["particle_id", "x", "y"]
 df = spark.createDataFrame(data, columns)
@@ -42,6 +47,7 @@ result_df = grouped_df.withColumn("convex_hull", compute_convex_hull_udf(col("po
 
 # Show the result (only showing a small sample due to the large dataset)
 result_df.select("particle_id", "convex_hull").show(10, truncate=False)
-
+end = time.time()
+print(end-start)
 # Stop the Spark session
 spark.stop()
