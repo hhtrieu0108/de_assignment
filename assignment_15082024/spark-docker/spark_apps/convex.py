@@ -46,7 +46,7 @@ compute_convex_hull_udf = spark.udf.register("compute_convex_hull", compute_conv
 result_df = grouped_df.withColumn("convex_hull", compute_convex_hull_udf(col("points")))
 
 # Show the result (only showing a small sample due to the large dataset)
-result_df.select("particle_id", "convex_hull").show(10, truncate=False)
+print(result_df.select("particle_id", "convex_hull").show(10, truncate=False))
 end = time.time()
 print(end-start)
 # Stop the Spark session
